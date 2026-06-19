@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ medicine.name }}</h2>
+<p>{{ medicine.description }}</p>
+
+{% if batches %}
+  <h4 class="mt-4">Available Batches</h4>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Batch</th>
+        <th>Expiry Date</th>
+        <th>Days Remaining</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for b in batches %}
+      <tr>
+        <td>{{ b.batch_number }}</td>
+        <td>{{ b.expiry_date }}</td>
+        <td>{{ b.days_remaining }}</td>
+        <td>₹{{ "%.2f"|format(b.selling_price) }}</td>
+        <td>{{ b.quantity }}</td>
+        <td>
+          <form action="{{ url_for('add_to_cart') }}" method="post" class="d-flex">
+            <input type="hidden" name="batch_id" value="{{ b.id }}">
+            <input type="number" name="quantity" min="1" max="{{ b.quantity }}" value="1" class="form-control me-2" style="width:80px;">
+            <button class="btn btn-success">Add to Cart</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="alert alert-info">Currently unavailable.</div>
+{% endif %}
+{% endblock %}

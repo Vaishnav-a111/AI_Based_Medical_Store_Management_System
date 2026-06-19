@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Your Cart</h2>
+{% if session.get('cart') %}
+<form method="post" enctype="multipart/form-data">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Medicine</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for batch_id, item in session.cart.items() %}
+      <tr>
+        <td>{{ item.name }}</td>
+        <td>₹{{ "%.2f"|format(item.price) }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>₹{{ "%.2f"|format(item.price * item.quantity) }}</td>
+      </tr>
+      <input type="hidden" name="batch_id" value="{{ batch_id }}">
+      <input type="hidden" name="quantity" value="{{ item.quantity }}">
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <h5>Total: ₹{{ "%.2f"|format(total) }}</h5>
+
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input type="text" name="name" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Phone</label>
+    <input type="text" name="phone" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Email</label>
+    <input type="email" name="email" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Address</label>
+    <textarea name="address" class="form-control" ></textarea>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Doctor's Prescription (optional)</label>
+    <input type="file" name="prescription" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Payment Method</label>
+    <select name="payment_method" class="form-select" required>
+      <option value="COD">Cash on Delivery</option>
+      <option value="Online">Other</option>
+    </select>
+  </div>
+  <button class="btn btn-primary">Place Order</button>
+</form>
+{% else %}
+<div class="alert alert-info">Your cart is empty.</div>
+{% endif %}
+{% endblock %}

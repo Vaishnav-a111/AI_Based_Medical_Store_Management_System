@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Order History</h2>
+{% if orders %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Customer</th>
+      <th>Medicine</th>
+      <th>Quantity</th>
+      <th>Total</th>
+      <th>Status</th>
+      <th>Ordered On</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for o in orders %}
+    <tr>
+        <td>{{ loop.index }}</td>
+      
+      <td>{{ o.customer_name }}</td>
+      <td>{{ o.medicine_name }}</td>
+      <td>{{ o.quantity }}</td>
+      <td>₹{{ "%.2f"|format(o.total_amount) }}</td>
+      <td>{{ o.status }}</td>
+      <td>{{ o.sale_date }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="alert alert-info">No orders found.</div>
+{% endif %}
+{% endblock %}

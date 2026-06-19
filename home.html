@@ -1,0 +1,240 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to Our Medical Store</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f2f7ff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4a90e2;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        header p {
+            margin-top: 10px;
+            font-size: 1.2em;
+            font-style: italic;
+        }
+        .search-container {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .search-container input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .search-container button {
+            padding: 12px 20px;
+            font-size: 1em;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .search-container button:hover {
+            background-color: #357ab8;
+        }
+
+        /* AI Button Styling */
+        #ai-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 14px 24px;
+            background-color: #e94e77;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        #ai-button:hover {
+            background-color: #c83b61;
+        }
+
+        /* AI Modal */
+        #ai-modal {
+            display: none;
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background-color: white;
+            padding: 20px;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        #ai-modal input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #ai-modal button {
+            padding: 10px 20px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #ai-modal button:hover {
+            background-color: #357ab8;
+        }
+
+        #cart-link {
+    background-color: #ffffff;
+    color: #4a90e2;
+    padding: 10px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.95em;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: background-color 0.3s;
+}
+
+#cart-link:hover {
+    background-color: #e1ecfb;
+}
+    </style>
+</head>
+<body>
+    
+    <header>
+        <h1>Welcome to Our Medical Store</h1>
+        <p>"Your Health, Our Priority – Quality Medicines You Can Trust"</p>
+         <div>
+            <a href="{{ url_for('cart') }}" id="cart-link">🛒 View Cart</a>
+        </div>
+    </header>
+    
+
+    <div class="search-container">
+        <form action="{{ url_for('search') }}" method="get">
+            <input type="text" id="search-box" name="query" placeholder="Search for medicines..." required autocomplete="off">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <!-- Floating AI Button -->
+    <button id="ai-button">AI Search</button>
+
+    <!-- AI Modal -->
+    <div id="ai-modal">
+        <form action="{{ url_for('ai_search') }}" method="post">
+            <label for="symptom">Enter symptom or illness:</label>
+            <input type="text" name="symptom" id="symptom"  placeholder="e.g., fever, headache" required autocomplete="off">
+            <button type="submit">Find Medicines</button>
+        </form>
+    </div>
+
+    <!-- jQuery and jQuery UI for autocomplete -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+    <!-- <script>
+        // Autocomplete for search box
+        $(function() {
+            $("#search-box").autocomplete({
+                source: "/autocomplete",
+                minLength: 1
+            });
+        });
+
+
+        $(function() {
+            $("#symptom").autocomplete({
+                source: "/autocomplete",
+                minLength: 1
+            });
+        });
+
+        // Toggle AI Modal
+        document.getElementById("ai-button").onclick = function () {
+            const modal = document.getElementById("ai-modal");
+            modal.style.display = modal.style.display === "block" ? "none" : "block";
+        };
+    </script> -->
+
+    <script>
+    $(function() {
+        // Autocomplete for medicine search (main box)
+        $("#search-box").autocomplete({
+            source: function(request, response) {
+                $.getJSON("/autocomplete", { term: request.term }, function(data) {
+                    const term = request.term.toLowerCase();
+                    const startsWith = data.filter(item => item.toLowerCase().startsWith(term));
+                    const others = data.filter(item => !item.toLowerCase().startsWith(term));
+                    response(startsWith.concat(others));
+                });
+            },
+            minLength: 1
+        });
+
+        // Autocomplete for symptom/illness search (AI modal)
+        // $("#symptom").autocomplete({
+        //     source: function(request, response) {
+        //         $.getJSON("/api/symptom_autocomplete", { term: request.term }, function(data) {
+        //             const term = request.term.toLowerCase();
+        //             const startsWith = data.filter(item => item.toLowerCase().startsWith(term));
+        //             const others = data.filter(item => !item.toLowerCase().startsWith(term));
+        //             response(startsWith.concat(others));
+        //         });
+        //     },
+        //     minLength: 1
+        // });
+
+        $("#symptom").autocomplete({
+    source: function(request, response) {
+        $.getJSON("/api/symptom_autocomplete", { term: request.term }, function(data) {
+            response(data); // data is already in { label, value } format
+        });
+    },
+    minLength: 1,
+    select: function(event, ui) {
+        $("#symptom").val(ui.item.value);  // ensure correct value is placed in the input
+        return false;
+    }
+});
+
+
+        // Toggle AI Modal
+        document.getElementById("ai-button").onclick = function () {
+            const modal = document.getElementById("ai-modal");
+            modal.style.display = modal.style.display === "block" ? "none" : "block";
+        };
+    });
+</script>
+</body>
+</html>

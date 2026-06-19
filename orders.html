@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Previous Order History</h2>
+    {% if orders %}
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Medicine</th>
+                <th>Batch</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total Amount</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ order.medicine_name }}</td>
+                <td>{{ order.batch_number }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>₹{{ "%.2f"|format(order.unit_price) }}</td>
+                <td>₹{{ "%.2f"|format(order.total_amount) }}</td>
+                <td>{{ order.sale_date.strftime('%Y-%m-%d') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-info">
+        No orders have been placed yet.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

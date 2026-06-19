@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Search Results for "{{ query }}"</h2>
+{% if medicines %}
+  <div class="row">
+    {% for med in medicines %}
+      <div class="col-md-4">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">{{ med.name }}</h5>
+            <p class="card-text">{{ med.description }}</p>
+            <p><strong>Starting at ₹{{ "%.2f"|format(med.min_price) }}</strong></p>
+            <a href="{{ url_for('medicine_details', id=med.id) }}" class="btn btn-primary">View Details</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="alert alert-warning">No medicines found.</div>
+{% endif %}
+{% endblock %}
