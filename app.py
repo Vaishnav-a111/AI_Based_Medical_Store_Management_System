@@ -13,7 +13,7 @@ def get_db_connection():
     conn = mc.connect(
         host="localhost",
         user="root",
-        passwd="Vaishnav8301946204",  # Update with your password
+        passwd="passwd="YOUR_PASSWORD"",  # Update with your password
         database="medcl"
     )
     return conn
